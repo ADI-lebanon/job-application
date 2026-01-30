@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Company Registration / Job Application</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+        <div class="brand">
+  <img src="./logo.jpg" alt="Company logo" class="logo" />
+</div>
+
+      <div class="langbar">
+        <button type="button" id="langToggle" class="langbtn" aria-pressed="false">العربية</button>
+      </div>
+
+      <h1 id="t_title">Job Application Form</h1>
+      <p id="t_intro">Please fill in your information. Fields marked <span class="req">*</span> are required.</p>
+    </header>
+
+    <form id="applicationForm" class="card" novalidate>
+      <section class="grid">
+        <div class="field">
+          <label for="photo" id="t_photo">Personal Photo<span class="req">*</span></label>
+          <input id="photo" name="photo" type="file" accept="image/*" required />
+          <small class="hint" id="t_photo_hint">JPG/PNG/WebP, up to 5MB</small>
+        </div>
+
+        <div class="field">
+          <label for="fullName" id="t_fullName">Full Name <span class="req">*</span></label>
+          <input id="fullName" name="fullName" type="text" autocomplete="name" required maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="dob" id="t_dob">Date of Birth</label>
+          <input id="dob" name="dob" type="date" />
+        </div>
+
+        <div class="field">
+          <label for="city" id="t_city">Residential City</label>
+          <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="phone" id="t_phone">Phone Number <span class="req">*</span></label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="+961 ..." data-t-placeholder="phone_placeholder" maxlength="30" />
+        </div>
+
+        <div class="field">
+          <label for="position" id="t_position">Position Applied To <span class="req">*</span></label>
+          <input id="position" name="position" type="text" required maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="educationLevel" id="t_educationLevel">Educational Level</label>
+          <select id="educationLevel" name="educationLevel">
+            <option value="" data-opt-key="select">Select…</option>
+            <option data-opt-key="hs">High School</option>
+            <option data-opt-key="tv">Technical / Vocational</option>
+            <option data-opt-key="ad">Associate Degree</option>
+            <option data-opt-key="ba">Bachelor’s</option>
+            <option data-opt-key="ma">Master’s</option>
+            <option data-opt-key="phd">PhD</option>
+            <option data-opt-key="other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="major" id="t_major">Major / Field of Study</label>
+          <input id="major" name="major" type="text" maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="experienceYears" id="t_experienceYears">Experience (Years)</label>
+          <input id="experienceYears" name="experienceYears" type="number" min="0" max="60" step="0.5" />
+        </div>
+
+        <div class="field">
+          <label for="lastCompany" id="t_lastCompany">Most Recent Company</label>
+          <input id="lastCompany" name="lastCompany" type="text" maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="previousPosition" id="t_previousPosition">Previous Position</label>
+          <input id="previousPosition" name="previousPosition" type="text" maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="previousSalary" id="t_previousSalary">Previous Salary (optional)</label>
+          <input id="previousSalary" name="previousSalary" type="number" min="0" step="1" placeholder="e.g. 800" data-t-placeholder="salary_placeholder" />
+          <small class="hint" id="t_salary_hint">If you don’t want to share, leave it empty.</small>
+        </div>
+
+        <div class="field">
+          <label for="workingHours" id="t_workingHours">Working Hours Preference</label>
+          <select id="workingHours" name="workingHours">
+            <option value="" data-wh-key="select">Select…</option>
+            <option data-wh-key="full">Full-time</option>
+            <option data-wh-key="part">Part-time</option>
+            <option data-wh-key="flex">Flexible</option>
+          </select>
+        </div>
+
+        <div class="field field--full">
+          <label for="reasonLeaving" id="t_reasonLeaving">Reason for Leaving Previous Work</label>
+          <textarea id="reasonLeaving" name="reasonLeaving" rows="3" maxlength="1000"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="checkbox" id="t_smoker">
+            <input id="smoker" name="smoker" type="checkbox" />
+            Smoker?
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="checkbox" id="t_relatives">
+            <input id="relatives" name="relatives" type="checkbox" />
+            Do you have relatives in the company?
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="checkbox" id="t_drivingLicense">
+            <input id="drivingLicense" name="drivingLicense" type="checkbox" />
+            Do you have a driving license?
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="checkbox" id="t_nightShift">
+            <input id="nightShift" name="nightShift" type="checkbox" />
+            Can you work night shifts?
+          </label>
+        </div>
+
+        <div class="field field--full">
+          <label for="message" id="t_message">Message</label>
+          <textarea id="message" name="message" rows="4" maxlength="2000" placeholder="Anything you want us to know…" data-t-placeholder="message_placeholder"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="checkbox" id="t_healthIssues">
+            <input id="hasHealthIssues" name="hasHealthIssues" type="checkbox" />
+            Do you have health issues that affect work?
+          </label>
+        </div>
+
+        <div class="field field--full" id="healthDetailsWrap" hidden>
+          <label for="healthDetails" id="t_healthDetails">If yes, what is it?</label>
+          <textarea id="healthDetails" name="healthDetails" rows="3" maxlength="1000"></textarea>
+          <small class="hint" id="t_health_hint">Only share what’s necessary for work accommodations.</small>
+        </div>
+
+        <div class="field field--full">
+          <label for="cv" id="t_cv">CV Upload</label>
+          <input id="cv" name="cv" type="file" accept=".pdf,.doc,.docx" />
+          <small class="hint" id="t_cv_hint">PDF/DOC/DOCX, up to 10MB</small>
+        </div>
+
+        <div class="field field--full">
+          <label class="checkbox" id="t_consent">
+            <input id="consent" name="consent" type="checkbox" required />
+            I consent to the company collecting and reviewing my submitted information for recruitment purposes. <span class="req">*</span>
+          </label>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button id="submitBtn" type="submit" data-t="submit_btn">Submit Application</button>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </div>
+    </form>
+
+    <footer class="footer">
+      <small id="t_footer">Tip: Don’t submit passwords or banking details. This form is only for recruitment.</small>
+    </footer>
+  </main>
+
+  <!-- Supabase JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
