@@ -6,7 +6,14 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const BUCKET_PHOTOS = "applicant-photos";
 const BUCKET_CVS = "applicant-cvs";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: window.sessionStorage,   // <- key change
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: false,
+  },
+});
 
 // ====== DOM ======
 const loginCard = document.getElementById("loginCard");
@@ -320,3 +327,4 @@ refreshBtn.addEventListener("click", async () => {
 logoutBtn.addEventListener("click", async () => {
   await sb.auth.signOut();
 });
+
