@@ -15,6 +15,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   },
 });
 
+
 // ====== DOM ======
 const loginCard = document.getElementById("loginCard");
 const adminApp = document.getElementById("adminApp");
@@ -283,15 +284,16 @@ function withTimeout(promise, ms = 10000) {
   ]);
 }
 
+let slowTimer = null;
+
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   setStatus(loginStatus, "Signing in…");
   loginBtn.disabled = true;
 
-  // After 10s, show a helpful message, but DO NOT fail the login.
-  const t = setTimeout(() => {
-    setStatus(loginStatus, "Still signing in… If this keeps spinning, clear site data for this site.", "err");
-  }, 10000);
+  slowTimer = setTimeout(() => {
+    setStatus(loginStatus, "Still signing in… Click Reset if it doesn’t finish.", "err");
+  }, 8000);
 
   try {
     const email = emailEl.value.trim();
@@ -300,18 +302,25 @@ loginForm.addEventListener("submit", async (e) => {
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message);
 
-    clearTimeout(t);
-    setStatus(loginStatus, "Signed in. Checking access…");
+    clearTimeout(slowTimer);
+    setStatus(loginStatus, "Signed in. Loading…");
 
     await showAdminUI(data.session);
     setStatus(loginStatus, "", "ok");
   } catch (err) {
-    clearTimeout(t);
-    console.error(err);
+    clearTimeout(slowTimer);
     setStatus(loginStatus, err.message || "Login failed", "err");
   } finally {
     loginBtn.disabled = false;
   }
+});
+
+const resetLoginBtn = document.getElementById("resetLoginBtn");
+
+resetLoginBtn.addEventListener("click", async () => {
+  try { await sb.auth.signOut(); } catch {}
+  try { sessionStorage.clear(); localStorage.clear(); } catch {}
+  location.reload();
 });
 
 
@@ -327,4 +336,3 @@ refreshBtn.addEventListener("click", async () => {
 logoutBtn.addEventListener("click", async () => {
   await sb.auth.signOut();
 });
-
