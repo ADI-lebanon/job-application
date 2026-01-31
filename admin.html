@@ -60,10 +60,11 @@
           <label for="password">Password</label>
           <input id="password" type="password" autocomplete="current-password" required />
         </div>
-        <div class="field field--full">
-          <button id="loginBtn" type="submit">Login</button>
-          <div id="loginStatus" class="status" role="status" aria-live="polite"></div>
-        </div>
+      <div class="field field--full" style="display:flex; gap:10px; flex-wrap:wrap;">
+  <button id="loginBtn" type="submit">Login</button>
+  <button id="resetLoginBtn" type="button" class="btn-secondary">Reset</button>
+</div>
+<div id="loginStatus" class="status" role="status" aria-live="polite"></div>
       </form>
     </section>
 
@@ -122,10 +123,6 @@
               <a id="downloadCvBtn" class="btn-secondary hidden" href="#" download  target="_blank">Download CV</a>
             </div>
           </div>
-
-          <div class="small" style="margin-top:10px;">
-            Note: download links are temporary for security.
-          </div>
         </div>
       </div>
     </div>
@@ -133,8 +130,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./admin.js"></script>
+  <script src="./admin.js?v=9"></script>
 </body>
 </html>
-
-
