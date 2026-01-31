@@ -37,7 +37,18 @@ const downloadPhotoBtn = document.getElementById("downloadPhotoBtn");
 const downloadCvBtn = document.getElementById("downloadCvBtn");
 
 let cachedRows = new Map(); // id -> full row
+function closeDetails() {
+  if (!detailsModal) return;
+  detailsModal.classList.add("hidden");
+}
 
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeDetails();
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target?.getAttribute("data-close") === "details") closeDetails();
+});
 function setStatus(el, msg, type = "") {
   el.textContent = msg;
   el.className = `status ${type}`.trim();
