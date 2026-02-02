@@ -304,6 +304,44 @@ function safeFileName(originalName) {
   return originalName.replace(/[^\w.\-]+/g, "_").slice(0, 120);
 }
 
+async function compressImage(file, {
+  maxSize = 1200,     // max width/height in px
+  quality = 0.8,      // 0..1
+  mimeType = "image/jpeg" // "image/webp" also works in modern browsers
+} = {}) {
+  if (!file || !file.type.startsWith("image/")) return file;
+
+  // Use createImageBitmap when available (fast)
+  const bitmap = await createImageBitmap(file);
+
+  let { width, height } = bitmap;
+
+  // If already small, still compress format/quality
+  const scale = Math.min(1, maxSize / Math.max(width, height));
+  const targetW = Math.max(1, Math.round(width * scale));
+  const targetH = Math.max(1, Math.round(height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = targetW;
+  canvas.height = targetH;
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+
+  // Convert canvas to blob
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob((b) => resolve(b), mimeType, quality);
+  });
+
+  // Fallback: if blob failed, return original
+  if (!blob) return file;
+
+  // Give it a clean name
+  const newName = file.name.replace(/\.\w+$/, "") + (mimeType === "image/webp" ? ".webp" : ".jpg");
+
+  return new File([blob], newName, { type: mimeType });
+}
+
 async function uploadFile(bucket, file, prefix) {
   if (!file) return null;
 
@@ -373,6 +411,17 @@ form.addEventListener("submit", async (e) => {
     if (!required(nationality)) throw new Error(t.err_nationality);
 
     const photoFile = document.getElementById("photo").files[0] || null;
+    let photoToUpload = photoFile;
+
+if (photoFile) {
+  setStatus("Optimizing photo…");
+  photoToUpload = await compressImage(photoFile, {
+    maxSize: 1200,
+    quality: 0.8,
+    mimeType: "image/jpeg",
+  });
+}
+
     if (!photoFile) {
   throw new Error(
     (translations[getLang()] || translations.en).err_photo_required ||
@@ -390,7 +439,7 @@ form.addEventListener("submit", async (e) => {
     }
 
     setStatus(t.status_uploading);
-    const photo_path = await uploadFile(BUCKET_PHOTOS, photoFile, "photos");
+   const photo_path = await uploadFile(BUCKET_PHOTOS, photoToUpload, "photos");
     const cv_path = await uploadFile(BUCKET_CVS, cvFile, "cvs");
 
     setStatus(t.status_submitting);
