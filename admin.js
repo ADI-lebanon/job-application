@@ -210,7 +210,7 @@ const exclude = new Set([
 
   // Nice ordering: put key fields first, then the rest
   const priority = [
-    "full_name","date_of_birth","residential_city","phone_number","position_applied",
+    "full_name", "nationality","date_of_birth","residential_city","phone_number","position_applied",
     "education_level","major","experience_years",
     "last_company","previous_position","previous_salary","working_hours_preference",
     "reason_for_leaving","smoker","has_relatives_in_company","has_driving_license","can_work_night_shift",
