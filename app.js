@@ -20,7 +20,6 @@ const submitBtn = document.getElementById("submitBtn");
 const hasHealthIssuesEl = document.getElementById("hasHealthIssues");
 const healthDetailsWrap = document.getElementById("healthDetailsWrap");
 const healthDetailsEl = document.getElementById("healthDetails");
-
 const langToggle = document.getElementById("langToggle");
 
 // ====== i18n ======
@@ -32,6 +31,7 @@ const translations = {
     photo_hint: "JPG/PNG/WebP, up to 5MB",
 
     fullName: 'Full Name <span class="req">*</span>',
+    nationality: 'Nationality <span class="req">*</span>',
     dob: "Date of Birth",
     city: "Residential City",
     phone: 'Phone Number <span class="req">*</span>',
@@ -48,7 +48,7 @@ const translations = {
     smoker: "Smoker?",
     relatives: "Do you have relatives in the company?",
     drivingLicense: "Do you have a driving license?",
-    nightShift: "Can you work night shifts?",
+    nightShift: "Are you flexible to work day and night shifts?",
     message: "Message",
     healthIssues: "Do you have health issues that affect work?",
     healthDetails: "If yes, what is it?",
@@ -71,6 +71,7 @@ const translations = {
     status_submitting: "Submitting application…",
     status_success: "Submitted successfully. Thank you!",
     err_fullname: "Full name is required.",
+    err_nationality:"Nationality is required.",
     err_phone: "Phone number is required.",
     err_position: "Position applied to is required.",
     err_consent: "Consent is required.",
@@ -86,6 +87,7 @@ const translations = {
     photo_hint: "JPG/PNG/WebP — الحد الأقصى 5MB",
 
     fullName: 'الاسم الكامل <span class="req">*</span>',
+    nationality: 'الجنسية<span class="req">*</span>',
     dob: "تاريخ الميلاد",
     city: "مدينة السكن",
     phone: 'رقم الهاتف <span class="req">*</span>',
@@ -94,7 +96,7 @@ const translations = {
     major: "التخصص",
     experienceYears: "سنوات الخبرة",
     lastCompany: "آخر شركة",
-    previousPosition: "المنصب السابق",
+    previousPosition: "الوظيفة السابقة",
     previousSalary: "الراتب السابق (اختياري)",
     salary_hint: "إذا لا تريد المشاركة، اتركه فارغًا.",
     workingHours: "تفضيل ساعات العمل",
@@ -102,7 +104,7 @@ const translations = {
     smoker: "هل أنت مدخن؟",
     relatives: "هل لديك أقارب في الشركة؟",
     drivingLicense: "هل لديك رخصة قيادة؟",
-    nightShift: "هل يمكنك العمل في مناوبة ليلية؟",
+    nightShift: "هل يمكنك العمل في مناوبة صباحية وليلية؟",
     message: "رسالة",
     healthIssues: "هل لديك مشاكل صحية تؤثر على العمل؟",
     healthDetails: "إذا نعم، ما هي؟",
@@ -125,6 +127,7 @@ const translations = {
     status_submitting: "جارٍ إرسال الطلب…",
     status_success: "تم الإرسال بنجاح. شكرًا لك!",
     err_fullname: "الاسم الكامل مطلوب.",
+    err_nationality:"الجنسية مطلوبة",
     err_phone: "رقم الهاتف مطلوب.",
     err_position: "الوظيفة المتقدم لها مطلوبة.",
     err_consent: "يجب الموافقة على الإقرار.",
@@ -156,6 +159,7 @@ function applyLang(lang) {
     ["t_photo", "photo"],
     ["t_photo_hint", "photo_hint"],
     ["t_fullName", "fullName"],
+    ["t_nationality", "nationality"],
     ["t_dob", "dob"],
     ["t_city", "city"],
     ["t_phone", "phone"],
@@ -330,6 +334,7 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const full_name = document.getElementById("fullName").value.trim();
+    const nationality = document.getElementById("nationality").value.trim() || null;
     const date_of_birth = document.getElementById("dob").value || null;
     const residential_city = document.getElementById("city").value.trim() || null;
     const phone_number = document.getElementById("phone").value.trim();
@@ -365,6 +370,7 @@ form.addEventListener("submit", async (e) => {
     if (!required(phone_number)) throw new Error(t.err_phone);
     if (!required(position_applied)) throw new Error(t.err_position);
     if (!consent) throw new Error(t.err_consent);
+    if (!required(nationality)) throw new Error(t.err_nationality);
 
     const photoFile = document.getElementById("photo").files[0] || null;
     if (!photoFile) {
@@ -391,6 +397,7 @@ form.addEventListener("submit", async (e) => {
 
     const payload = {
       full_name,
+      nationality,
       date_of_birth,
       residential_city,
       phone_number,
