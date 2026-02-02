@@ -303,6 +303,14 @@ function bytesFromMB(mb) {
 function safeFileName(originalName) {
   return originalName.replace(/[^\w.\-]+/g, "_").slice(0, 120);
 }
+function slugifyName(name) {
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w\-]+/g, "")   // keeps a-z 0-9 _
+    .slice(0, 50) || "applicant";
+}
 
 async function compressImage(file, {
   maxSize = 1200,     // max width/height in px
@@ -342,20 +350,27 @@ async function compressImage(file, {
   return new File([blob], newName, { type: mimeType });
 }
 
-async function uploadFile(bucket, file, prefix) {
+async function uploadFile(bucket, file, prefix, friendlyBase) {
   if (!file) return null;
 
-  const cleaned = safeFileName(file.name);
-  const unique = `${prefix}/${crypto.randomUUID()}_${Date.now()}_${cleaned}`;
+  const cleanedOriginal = safeFileName(file.name);
+  const ext = cleanedOriginal.includes(".") ? cleanedOriginal.split(".").pop() : "bin";
+
+  const base = slugifyName(friendlyBase);
+  const uniqueId = crypto.randomUUID().slice(0, 8);
+
+  // final stored filename
+  const unique = `${prefix}/${base}_${uniqueId}.${ext}`;
 
   const { error } = await sb.storage.from(bucket).upload(unique, file, {
     upsert: false,
     contentType: file.type || undefined,
   });
 
-  if (error) throw new Error(error.message || "Upload failed");
+  if (error) throw new Error(`Upload failed: ${error.message}`);
   return unique;
 }
+
 
 function required(value) {
   return value !== null && value !== undefined && String(value).trim().length > 0;
@@ -439,8 +454,9 @@ if (photoFile) {
     }
 
     setStatus(t.status_uploading);
-   const photo_path = await uploadFile(BUCKET_PHOTOS, photoToUpload, "photos");
-    const cv_path = await uploadFile(BUCKET_CVS, cvFile, "cvs");
+const photo_path = await uploadFile(BUCKET_PHOTOS, photoToUpload, "photos", full_name);
+const cv_path = await uploadFile(BUCKET_CVS, cvFile, "cvs", full_name);
+
 
     setStatus(t.status_submitting);
 
