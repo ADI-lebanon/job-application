@@ -62,7 +62,7 @@ const translations = {
     submit_btn: "Submit Application",
 
     phone_placeholder: "+961 ...",
-    salary_placeholder: "e.g. 800",
+    salary_placeholder: "e.g. 400",
     message_placeholder: "Anything you want us to know…",
 
     // status
@@ -118,7 +118,7 @@ const translations = {
     submit_btn: "إرسال الطلب",
 
     phone_placeholder: "مثال: +961 ...",
-    salary_placeholder: "مثال: 800",
+    salary_placeholder: "مثال: 400",
     message_placeholder: "أي معلومات إضافية…",
 
     // status
