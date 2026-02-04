@@ -311,6 +311,40 @@ function slugifyName(name) {
     .replace(/[^\w\-]+/g, "")   // keeps a-z 0-9 _
     .slice(0, 50) || "applicant";
 }
+function arabicToLatin(str) {
+  const map = {
+    "ا":"a","أ":"a","إ":"i","آ":"aa","ء":"", "ؤ":"w","ئ":"y",
+    "ب":"b","ت":"t","ث":"th","ج":"j","ح":"h","خ":"kh",
+    "د":"d","ذ":"dh","ر":"r","ز":"z","س":"s","ش":"sh",
+    "ص":"s","ض":"d","ط":"t","ظ":"z","ع":"a","غ":"gh",
+    "ف":"f","ق":"q","ك":"k","ل":"l","م":"m","ن":"n",
+    "ه":"h","ة":"a","و":"w","ي":"y","ى":"a",
+    "٠":"0","١":"1","٢":"2","٣":"3","٤":"4","٥":"5","٦":"6","٧":"7","٨":"8","٩":"9"
+  };
+
+  // Remove common diacritics/tashkeel
+  const diacritics = /[\u064B-\u065F\u0670\u06D6-\u06ED]/g;
+
+  return String(str || "")
+    .replace(diacritics, "")
+    .split("")
+    .map(ch => map[ch] ?? ch)
+    .join("");
+}
+function safeNameBase(fullName) {
+  const latin = arabicToLatin(fullName);
+
+  const base = latin
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")      // remove accents
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_-]+/g, "")         // ASCII only
+    .slice(0, 50);
+
+  return base || "applicant";
+}
 
 async function compressImage(file, {
   maxSize = 1200,     // max width/height in px
@@ -356,11 +390,9 @@ async function uploadFile(bucket, file, prefix, friendlyBase) {
   const cleanedOriginal = safeFileName(file.name);
   const ext = cleanedOriginal.includes(".") ? cleanedOriginal.split(".").pop() : "bin";
 
-  const base = slugifyName(friendlyBase);
-  const uniqueId = crypto.randomUUID().slice(0, 8);
-
-  // final stored filename
-  const unique = `${prefix}/${base}_${uniqueId}.${ext}`;
+const base = safeNameBase(friendlyBase);
+const uniqueId = crypto.randomUUID().slice(0, 8);
+const unique = `${prefix}/${base}_${uniqueId}.${ext}`;
 
   const { error } = await sb.storage.from(bucket).upload(unique, file, {
     upsert: false,
