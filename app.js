@@ -27,13 +27,13 @@ const translations = {
   en: {
     title: "Job Application Form",
     intro: 'Please fill in your information. Fields marked <span class="req">*</span> are required.',
-    photo: 'Personal Photo <span class="req">*</span>',
+    photo: 'Add an ADI image <span class="req">*</span>',
     photo_hint: "JPG/PNG/WebP, up to 5MB",
 
     fullName: 'Full Name <span class="req">*</span>',
-    nationality: 'Nationality <span class="req">*</span>',
-    dob: "Date of Birth",
-    city: "Residential City",
+    // nationality: 'Nationality <span class="req">*</span>',//
+    //dob: "Date of Birth",//
+    //city: "Residential City",//
     phone: 'Phone Number <span class="req">*</span>',
     position: 'Position Applied To <span class="req">*</span>',
     educationLevel: "Educational Level",
