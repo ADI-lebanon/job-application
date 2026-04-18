@@ -148,18 +148,6 @@ button:disabled {
   font-weight: 700;
 }
 
-.brand {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.logo {
-  height: 72px;
-  width: auto;
-  object-fit: contain;
-}
-
 html[dir="rtl"] input,
 html[dir="rtl"] select,
 html[dir="rtl"] textarea {
@@ -173,5 +161,4 @@ html[dir="rtl"] .checkbox {
 
 @media (max-width: 720px) {
   .grid { grid-template-columns: 1fr; }
-  .logo { height: 56px; }
 }
