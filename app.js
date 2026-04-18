@@ -1,11 +1,8 @@
 // ====== CONFIG ======
 const SUPABASE_URL = "https://hofhjeevhbinaszewohl.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
+const SUPABASE_ANON_KEY = "PUT_YOUR_SUPABASE_ANON_KEY_HERE";
 
-// Buckets created in Supabase Storage
 const BUCKET_PHOTOS = "applicant-photos";
-
-// File limits
 const MAX_PHOTO_MB = 5;
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -21,22 +18,19 @@ const translations = {
   en: {
     title: "Job Application Form",
     intro: 'Please fill in your information. Fields marked <span class="req">*</span> are required.',
-
     photo: 'Add an ADI image <span class="req">*</span>',
     photo_hint: "JPG/PNG/WebP, up to 5MB",
 
     fullName: 'Full Name <span class="req">*</span>',
     phone: 'Phone Number <span class="req">*</span>',
-
     experienceField: 'Do you have experience in our field? <span class="req">*</span>',
-    experienceFieldDetails: 'If yes, what is this experience?',
     shiftAbility: 'Can you work day and night shifts? <span class="req">*</span>',
+    experienceFieldDetails: 'If yes, what is this experience?',
     retailExperience: 'Do you have experience in retail? <span class="req">*</span>',
     customerReaction: 'What do you do if a customer gets upset? <span class="req">*</span>',
 
     consent:
       'I consent to the company collecting and reviewing my submitted information for recruitment purposes. <span class="req">*</span>',
-
     footer: "Tip: Don’t submit passwords or banking details. This form is only for recruitment.",
     submit_btn: "Submit Application",
 
@@ -45,13 +39,13 @@ const translations = {
     select: "Select…",
 
     phone_placeholder: "+961 ...",
-    experience_placeholder: "Write your experience here…",
-    customer_placeholder: "Write your answer here…",
+    experience_placeholder: "Write your experience here...",
+    customer_placeholder: "Write your answer here...",
 
     err_photo_required: "ADI image is required.",
-    status_optimizing: "Optimizing image…",
-    status_uploading: "Uploading image…",
-    status_submitting: "Submitting application…",
+    status_optimizing: "Optimizing image...",
+    status_uploading: "Uploading image...",
+    status_submitting: "Submitting application...",
     status_success: "Submitted successfully. Thank you!",
 
     err_fullname: "Full name is required.",
@@ -62,28 +56,25 @@ const translations = {
     err_customerReaction: "Please answer the customer question.",
     err_consent: "Consent is required.",
     err_photo_big: (mb) => `Image is too large. Max ${mb}MB.`,
-    err_generic: "Something went wrong.",
+    err_generic: "Something went wrong."
   },
 
   ar: {
     title: "نموذج التقديم للوظيفة",
     intro: 'يرجى تعبئة المعلومات. الحقول التي تحتوي على <span class="req">*</span> مطلوبة.',
-
     photo: 'ارفع صورة لل ADI <span class="req">*</span>',
     photo_hint: "JPG/PNG/WebP — الحد الأقصى 5MB",
 
     fullName: 'الاسم بالكامل <span class="req">*</span>',
     phone: 'رقم الهاتف <span class="req">*</span>',
-
     experienceField: 'هل لديك خبرة في مجال عملنا؟ <span class="req">*</span>',
-    experienceFieldDetails: 'إذا نعم، ما هي هذه الخبرة؟',
     shiftAbility: 'هل تستطيع العمل في نظام مسائي ونهاري؟ <span class="req">*</span>',
+    experienceFieldDetails: 'إذا نعم، ما هي هذه الخبرة؟',
     retailExperience: 'هل لديك خبره في ريتال؟ <span class="req">*</span>',
     customerReaction: 'ماذا تفعل في حال زبون قد زعل؟ <span class="req">*</span>',
 
     consent:
       'أوافق على أن تقوم الشركة بجمع ومراجعة المعلومات المقدمة لأغراض التوظيف. <span class="req">*</span>',
-
     footer: "ملاحظة: لا ترسل كلمات مرور أو معلومات بنكية. هذا النموذج للتوظيف فقط.",
     submit_btn: "إرسال الطلب",
 
@@ -92,13 +83,13 @@ const translations = {
     select: "اختر…",
 
     phone_placeholder: "مثال: +961 ...",
-    experience_placeholder: "اكتب خبرتك هنا…",
-    customer_placeholder: "اكتب إجابتك هنا…",
+    experience_placeholder: "اكتب خبرتك هنا...",
+    customer_placeholder: "اكتب إجابتك هنا...",
 
     err_photo_required: "صورة ADI مطلوبة.",
-    status_optimizing: "جارٍ تحسين الصورة…",
-    status_uploading: "جارٍ رفع الصورة…",
-    status_submitting: "جارٍ إرسال الطلب…",
+    status_optimizing: "جارٍ تحسين الصورة...",
+    status_uploading: "جارٍ رفع الصورة...",
+    status_submitting: "جارٍ إرسال الطلب...",
     status_success: "تم الإرسال بنجاح. شكرًا لك!",
 
     err_fullname: "الاسم بالكامل مطلوب.",
@@ -109,8 +100,8 @@ const translations = {
     err_customerReaction: "يرجى الإجابة على سؤال الزبون.",
     err_consent: "يجب الموافقة على الإقرار.",
     err_photo_big: (mb) => `حجم الصورة كبير. الحد الأقصى ${mb}MB.`,
-    err_generic: "حدث خطأ ما.",
-  },
+    err_generic: "حدث خطأ ما."
+  }
 };
 
 function getLang() {
@@ -136,16 +127,18 @@ function applyLang(lang) {
     ["t_fullName", "fullName"],
     ["t_phone", "phone"],
     ["t_experienceField", "experienceField"],
-    ["t_experienceFieldDetails", "experienceFieldDetails"],
     ["t_shiftAbility", "shiftAbility"],
+    ["t_experienceFieldDetails", "experienceFieldDetails"],
     ["t_retailExperience", "retailExperience"],
     ["t_customerReaction", "customerReaction"],
-    ["t_footer", "footer"],
+    ["t_footer", "footer"]
   ];
 
   for (const [id, key] of htmlMap) {
     const el = document.getElementById(id);
-    if (el && t[key]) el.innerHTML = t[key];
+    if (el && t[key]) {
+      el.innerHTML = t[key];
+    }
   }
 
   const consentLabel = document.getElementById("t_consent");
@@ -170,17 +163,15 @@ function applyLang(lang) {
     if (t[key]) el.setAttribute("placeholder", t[key]);
   });
 
-  const selectIds = ["experienceField", "shiftAbility", "retailExperience"];
-  selectIds.forEach((id) => {
+  ["experienceField", "shiftAbility", "retailExperience"].forEach((id) => {
     const select = document.getElementById(id);
     if (!select) return;
 
     const opts = select.querySelectorAll("option");
     opts.forEach((opt) => {
-      const val = opt.value;
-      if (val === "") opt.textContent = t.select;
-      if (val === "yes") opt.textContent = t.yes;
-      if (val === "no") opt.textContent = t.no;
+      if (opt.value === "") opt.textContent = t.select;
+      if (opt.value === "yes") opt.textContent = t.yes;
+      if (opt.value === "no") opt.textContent = t.no;
     });
   });
 
@@ -194,11 +185,11 @@ applyLang(getLang());
 
 if (langToggle) {
   langToggle.addEventListener("click", () => {
-    const current = getLang();
-    setLang(current === "en" ? "ar" : "en");
+    setLang(getLang() === "en" ? "ar" : "en");
   });
 }
 
+// ====== helpers ======
 function setStatus(msg, type = "") {
   statusEl.textContent = msg;
   statusEl.className = `status ${type}`.trim();
@@ -255,7 +246,7 @@ async function compressImage(file, {
   if (!file || !file.type.startsWith("image/")) return file;
 
   const bitmap = await createImageBitmap(file);
-  let { width, height } = bitmap;
+  const { width, height } = bitmap;
 
   const scale = Math.min(1, maxSize / Math.max(width, height));
   const targetW = Math.max(1, Math.round(width * scale));
@@ -290,7 +281,7 @@ async function uploadFile(bucket, file, prefix, friendlyBase) {
 
   const { error } = await sb.storage.from(bucket).upload(unique, file, {
     upsert: false,
-    contentType: file.type || undefined,
+    contentType: file.type || undefined
   });
 
   if (error) throw new Error(`Upload failed: ${error.message}`);
@@ -301,7 +292,7 @@ function required(value) {
   return value !== null && value !== undefined && String(value).trim().length > 0;
 }
 
-// ====== Submit ======
+// ====== submit ======
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   setStatus("");
@@ -313,13 +304,11 @@ form.addEventListener("submit", async (e) => {
   try {
     const full_name = document.getElementById("fullName").value.trim();
     const phone_number = document.getElementById("phone").value.trim();
-
     const experience_in_field = document.getElementById("experienceField").value;
-    const experience_field_details = document.getElementById("experienceFieldDetails").value.trim() || null;
-
+    const experience_field_details =
+      document.getElementById("experienceFieldDetails").value.trim() || null;
     const can_work_day_night = document.getElementById("shiftAbility").value;
     const retail_experience = document.getElementById("retailExperience").value;
-
     const customer_reaction = document.getElementById("customerReaction").value.trim();
     const consent = document.getElementById("consent").checked;
 
@@ -332,21 +321,21 @@ form.addEventListener("submit", async (e) => {
     if (!consent) throw new Error(t.err_consent);
 
     const photoFile = document.getElementById("photo").files[0] || null;
-    let photoToUpload = photoFile;
+    if (!photoFile) throw new Error(t.err_photo_required);
 
-    if (!photoFile) {
-      throw new Error(t.err_photo_required);
-    }
-
-    if (photoFile && photoFile.size > bytesFromMB(MAX_PHOTO_MB)) {
-      throw new Error(typeof t.err_photo_big === "function" ? t.err_photo_big(MAX_PHOTO_MB) : t.err_generic);
+    if (photoFile.size > bytesFromMB(MAX_PHOTO_MB)) {
+      throw new Error(
+        typeof t.err_photo_big === "function"
+          ? t.err_photo_big(MAX_PHOTO_MB)
+          : t.err_generic
+      );
     }
 
     setStatus(t.status_optimizing);
-    photoToUpload = await compressImage(photoFile, {
+    const photoToUpload = await compressImage(photoFile, {
       maxSize: 1200,
       quality: 0.8,
-      mimeType: "image/jpeg",
+      mimeType: "image/jpeg"
     });
 
     setStatus(t.status_uploading);
@@ -363,7 +352,7 @@ form.addEventListener("submit", async (e) => {
       retail_experience,
       customer_reaction,
       photo_path,
-      consent,
+      consent
     };
 
     const { error } = await sb.from("job_applications").insert(payload);
