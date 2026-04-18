@@ -1,19 +1,20 @@
 :root {
-  --bg: #0b0f17;
-  --card: #121a26;
-  --text: #e8eef7;
-  --muted: #a9b4c4;
-  --border: #243146;
-  --danger: #ff5a5f;
-  --ok: #6ee7b7;
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --text: #1a1f2b;
+  --muted: #6b7280;
+  --border: #d6dde8;
+  --danger: #dc2626;
+  --ok: #059669;
 }
 
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(1200px 600px at 10% 10%, #13233d, transparent),
-              radial-gradient(1200px 600px at 90% 20%, #1a2a4a, transparent),
+  background: radial-gradient(1200px 600px at 10% 10%, #e8f0ff, transparent),
+              radial-gradient(1200px 600px at 90% 20%, #f3f7ff, transparent),
               var(--bg);
   color: var(--text);
 }
@@ -28,11 +29,12 @@ body {
 .header p { margin: 0 0 18px; color: var(--muted); }
 
 .card {
-  background: color-mix(in srgb, var(--card) 92%, black);
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  overflow-x: hidden;
 }
 
 .grid {
@@ -41,7 +43,15 @@ body {
   gap: 14px;
 }
 
-.field { display: flex; flex-direction: column; gap: 6px; }
+.grid > * { min-width: 0; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
 .field--full { grid-column: 1 / -1; }
 
 label { font-weight: 600; }
@@ -51,17 +61,30 @@ input, select, textarea, button {
   font: inherit;
 }
 
+.field input:not([type="checkbox"]):not([type="radio"]),
+.field select,
+.field textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 input, select, textarea {
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: #0f1622;
+  background: #ffffff;
   color: var(--text);
   outline: none;
 }
 
+.field input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+}
+
 input:focus, select:focus, textarea:focus {
-  border-color: #3a5a88;
+  border-color: #7aa2ff;
 }
 
 .hint { color: var(--muted); font-size: 12px; }
@@ -89,6 +112,7 @@ button {
   background: #2b6fff;
   color: white;
 }
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -108,12 +132,14 @@ button:disabled {
   text-align: center;
 }
 
-@media (max-width: 720px) {
-  .grid { grid-template-columns: 1fr; }
+.langbar {
+  margin: 10px 0 0;
+  display: flex;
+  justify-content: flex-end;
 }
-.langbar { margin: 10px 0 0; display: flex; justify-content: flex-end; }
+
 .langbtn {
-  background: transparent;
+  background: #ffffff;
   border: 1px solid var(--border);
   color: var(--text);
   padding: 8px 12px;
@@ -121,12 +147,6 @@ button:disabled {
   cursor: pointer;
   font-weight: 700;
 }
-
-html[dir="rtl"] input,
-html[dir="rtl"] select,
-html[dir="rtl"] textarea { text-align: right; }
-html[dir="rtl"] .checkbox { flex-direction: row-reverse; justify-content: flex-end; }
-
 
 .brand {
   display: flex;
@@ -140,31 +160,18 @@ html[dir="rtl"] .checkbox { flex-direction: row-reverse; justify-content: flex-e
   object-fit: contain;
 }
 
-@media (max-width: 720px) {
-  .logo { height: 56px; }
-}
-/* ✅ Let grid items shrink instead of overflowing */
-.grid > * { min-width: 0; }
-.field { min-width: 0; }
-
-/* ✅ Make only text-like controls fill the field */
-.field input:not([type="checkbox"]):not([type="radio"]),
-.field select,
-.field textarea {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
+html[dir="rtl"] input,
+html[dir="rtl"] select,
+html[dir="rtl"] textarea {
+  text-align: right;
 }
 
-/* ✅ File input is often the overflow culprit on mobile */
-.field input[type="file"] {
-  width: 100%;
-  max-width: 100%;
-}
-
-/* Optional: protect the card from any single element overflow */
-.card { overflow-x: hidden; }
 html[dir="rtl"] .checkbox {
   flex-direction: row-reverse;
   justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+  .logo { height: 56px; }
 }
