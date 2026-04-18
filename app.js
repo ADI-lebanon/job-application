@@ -36,25 +36,25 @@ const translations = {
     //city: "Residential City",//
     phone: 'Phone Number <span class="req">*</span>',
     position: 'Position Applied To <span class="req">*</span>',
-    educationLevel: "Educational Level",
-    major: "Major / Field of Study",
-    experienceYears: "Experience (Years)",
-    lastCompany: "Most Recent Company",
-    previousPosition: "Previous Position",
-    previousSalary: "Previous Salary (optional)",
-    salary_hint: "If you don’t want to share, leave it empty.",
-    workingHours: "Working Hours Preference",
-    reasonLeaving: "Reason for Leaving Previous Work",
-    smoker: "Smoker?",
-    relatives: "Do you have relatives in the company?",
-    drivingLicense: "Do you have a driving license?",
+    //educationLevel: "Educational Level",//
+    //major: "Major / Field of Study",//
+    //experienceYears: "Experience (Years)",//
+    //lastCompany: "Most Recent Company",//
+    //previousPosition: "Previous Position",//
+    //previousSalary: "Previous Salary (optional)",//
+    //salary_hint: "If you don’t want to share, leave it empty.",//
+    //workingHours: "Working Hours Preference",
+    //reasonLeaving: "Reason for Leaving Previous Work",
+    smoker: "Do you have experience in retail?",
+    relatives: "If a customer becomes upset, I remain calm, listen actively, and work to resolve the issue professionally?",
+    //drivingLicense: "Do you have a driving license?",
     nightShift: "Are you flexible to work day and night shifts?",
     message: "Message",
-    healthIssues: "Do you have health issues that affect work?",
-    healthDetails: "If yes, what is it?",
-    health_hint: "Only share what’s necessary for work accommodations.",
-    cv: "CV Upload",
-    cv_hint: "PDF/DOC/DOCX, up to 10MB",
+    //healthIssues: "Do you have health issues that affect work?",
+    //healthDetails: "If yes, what is it?",
+    //health_hint: "Only share what’s necessary for work accommodations.",
+    //cv: "CV Upload",
+    //cv_hint: "PDF/DOC/DOCX, up to 10MB",
     consent:
       'I consent to the company collecting and reviewing my submitted information for recruitment purposes. <span class="req">*</span>',
     footer: "Tip: Don’t submit passwords or banking details. This form is only for recruitment.",
