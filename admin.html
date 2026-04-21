@@ -4,67 +4,204 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin - Applications</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./style.css" />
+
   <style>
-    .admin-wrap { max-width: 1050px; margin: 28px auto; padding: 0 16px; }
-    .toolbar { display:flex; justify-content: space-between; align-items:center; gap:12px; margin-bottom: 12px; flex-wrap: wrap; }
-    .pill { display:inline-block; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); font-size: 12px; }
-    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-danger { background: #ff5a5f; border: 0; color: #fff; }
-    .hidden { display:none !important; }
+    .admin-wrap {
+      max-width: 1100px;
+      margin: 28px auto;
+      padding: 0 16px;
+    }
 
-    .list { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-    .list th, .list td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
-    .list th { background: #0f1622; }
-    .list tr:hover { background: rgba(255,255,255,0.03); cursor: pointer; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
 
-    /* Modal */
-    .modal.hidden { display: none !important; }
-    .modal { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; }
-    .modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      background: #fff;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: #ff5a5f;
+      border: 0;
+      color: #fff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .list {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .list th,
+    .list td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .list th {
+      background: #f3f6fb;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .list tr:hover {
+      background: #f9fbff;
+      cursor: pointer;
+    }
+
+    .modal.hidden {
+      display: none !important;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
     .modal__panel {
       position: relative;
       width: min(980px, 100%);
       max-height: 88vh;
       overflow: auto;
-      background: #0f1622;
+      background: #fff;
       border: 1px solid var(--border);
       border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.4);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     }
-    .modal__head { display:flex; justify-content: space-between; align-items:center; gap:12px; padding: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-    .modal__body { padding: 14px; }
-    .kv { display:grid; grid-template-columns: 220px 1fr; gap:10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .kv strong { color: var(--muted); font-weight: 700; }
-    @media (max-width: 720px) { .kv { grid-template-columns: 1fr; } }
 
-    .fileRow { display:flex; gap:10px; flex-wrap: wrap; align-items:center; margin-top: 10px; }
-    .photoPreview { max-width: 240px; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); }
+    .modal__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 2;
+    }
+
+    .modal__body {
+      padding: 14px;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kv strong {
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .fileRow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-top: 10px;
+    }
+
+    .photoPreview {
+      max-width: 240px;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    @media (max-width: 720px) {
+      .kv {
+        grid-template-columns: 1fr;
+      }
+
+      .list th,
+      .list td {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="admin-wrap">
     <header class="header">
       <h1>HR Admin</h1>
+      <p class="hint">Review submitted job applications and open any row to see full details.</p>
     </header>
 
     <!-- LOGIN -->
     <section id="loginCard" class="card">
       <h2 style="margin-top:0;">Login</h2>
+
       <form id="loginForm" class="grid" style="grid-template-columns: 1fr 1fr;">
         <div class="field">
           <label for="email">Email</label>
           <input id="email" type="email" autocomplete="username" required />
         </div>
+
         <div class="field">
           <label for="password">Password</label>
           <input id="password" type="password" autocomplete="current-password" required />
         </div>
-      <div class="field field--full" style="display:flex; gap:10px; flex-wrap:wrap;">
-  <button id="loginBtn" type="submit">Login</button>
-  <button id="resetLoginBtn" type="button" class="btn-secondary">Reset</button>
-</div>
-<div id="loginStatus" class="status" role="status" aria-live="polite"></div>
+
+        <div class="field field--full" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="loginBtn" type="submit">Login</button>
+          <button id="resetLoginBtn" type="button" class="btn-secondary">Reset</button>
+        </div>
+
+        <div id="loginStatus" class="status field--full" role="status" aria-live="polite"></div>
       </form>
     </section>
 
@@ -75,6 +212,7 @@
           <span class="pill" id="whoami">Signed in</span>
           <span class="pill" id="countPill">0 applications</span>
         </div>
+
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button id="refreshBtn" type="button" class="btn-secondary">Refresh</button>
           <button id="logoutBtn" type="button" class="btn-danger">Logout</button>
@@ -88,7 +226,7 @@
           <thead>
             <tr>
               <th>Date</th>
-              <th>Full name</th>
+              <th>Full Name</th>
               <th>Position</th>
             </tr>
           </thead>
@@ -98,14 +236,16 @@
     </section>
 
     <!-- DETAILS MODAL -->
-    <div id="detailsModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div id="detailsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
       <div class="modal__backdrop" data-close="details"></div>
+
       <div class="modal__panel">
         <div class="modal__head">
           <div>
             <h3 id="detailsTitle" style="margin:0;">Application</h3>
             <div class="small" id="detailsSub"></div>
           </div>
+
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" class="btn-secondary" data-close="details">Close</button>
           </div>
@@ -118,18 +258,18 @@
 
           <div class="fileRow">
             <img id="photoPreview" class="photoPreview hidden" alt="Applicant photo" />
+
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <a id="downloadPhotoBtn" class="btn-secondary hidden" href="#" download  target="_blank">Download photo</a>
-              <a id="downloadCvBtn" class="btn-secondary hidden" href="#" download  target="_blank">Download CV</a>
+              <a id="downloadPhotoBtn" class="btn-secondary hidden" href="#" download target="_blank">Download photo</a>
+              <a id="downloadCvBtn" class="btn-secondary hidden" href="#" download target="_blank">Download CV</a>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./admin.js?v=9"></script>
+  <script src="./admin.js?v=10"></script>
 </body>
 </html>
