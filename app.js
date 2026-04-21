@@ -24,6 +24,7 @@ const translations = {
     fullName: 'Full Name <span class="req">*</span>',
     phone: 'Phone Number <span class="req">*</span>',
     experienceField: 'Do you have experience in our field? <span class="req">*</span>',
+    position: "What position are you applying for? <span class='req'>*</span>",
     shiftAbility: 'Can you work day and night shifts? <span class="req">*</span>',
     experienceFieldDetails: 'If yes, what is this experience?',
     retailExperience: 'Do you have experience in retail? <span class="req">*</span>',
@@ -50,6 +51,7 @@ const translations = {
 
     err_fullname: "Full name is required.",
     err_phone: "Phone number is required.",
+    err_position: "Position is required.",
     err_experienceField: "Please choose whether you have experience in our field.",
     err_shiftAbility: "Please choose whether you can work day and night shifts.",
     err_retailExperience: "Please choose whether you have retail experience.",
@@ -67,6 +69,7 @@ const translations = {
 
     fullName: 'الاسم بالكامل <span class="req">*</span>',
     phone: 'رقم الهاتف <span class="req">*</span>',
+    position: "ما هي الوظيفة التي تتقدم لها؟ <span class='req'>*</span>",
     experienceField: 'هل لديك خبرة في مجال عملنا؟ <span class="req">*</span>',
     shiftAbility: 'هل تستطيع العمل في نظام مسائي ونهاري؟ <span class="req">*</span>',
     experienceFieldDetails: 'إذا نعم، ما هي هذه الخبرة؟',
@@ -94,6 +97,7 @@ const translations = {
 
     err_fullname: "الاسم بالكامل مطلوب.",
     err_phone: "رقم الهاتف مطلوب.",
+    err_position: "الوظيفة مطلوبة.",
     err_experienceField: "يرجى اختيار ما إذا كان لديك خبرة في مجال عملنا.",
     err_shiftAbility: "يرجى اختيار ما إذا كنت تستطيع العمل مسائي ونهاري.",
     err_retailExperience: "يرجى اختيار ما إذا كان لديك خبرة في ريتال.",
@@ -126,6 +130,7 @@ function applyLang(lang) {
     ["t_photo_hint", "photo_hint"],
     ["t_fullName", "fullName"],
     ["t_phone", "phone"],
+    ["t_position", "position"],
     ["t_experienceField", "experienceField"],
     ["t_shiftAbility", "shiftAbility"],
     ["t_experienceFieldDetails", "experienceFieldDetails"],
@@ -304,6 +309,7 @@ form.addEventListener("submit", async (e) => {
   try {
     const full_name = document.getElementById("fullName").value.trim();
     const phone_number = document.getElementById("phone").value.trim();
+    const position = document.getElementById("position").value.trim();
     const experience_in_field = document.getElementById("experienceField").value;
     const experience_field_details =
       document.getElementById("experienceFieldDetails").value.trim() || null;
@@ -314,6 +320,7 @@ form.addEventListener("submit", async (e) => {
 
     if (!required(full_name)) throw new Error(t.err_fullname);
     if (!required(phone_number)) throw new Error(t.err_phone);
+    if (!required(position)) throw new Error(t.err_position);
     if (!required(experience_in_field)) throw new Error(t.err_experienceField);
     if (!required(can_work_day_night)) throw new Error(t.err_shiftAbility);
     if (!required(retail_experience)) throw new Error(t.err_retailExperience);
@@ -346,6 +353,7 @@ form.addEventListener("submit", async (e) => {
     const payload = {
       full_name,
       phone_number,
+      position,
       experience_in_field,
       experience_field_details,
       can_work_day_night,
