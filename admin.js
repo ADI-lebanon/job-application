@@ -1,20 +1,20 @@
 console.log("ADMIN JS LOADED", new Date().toISOString());
+
 // ====== CONFIG ======
 const SUPABASE_URL = "https://hofhjeevhbinaszewohl.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvZmhqZWV2aGJpbmFzemV3b2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDg1NjIsImV4cCI6MjA4NTMyNDU2Mn0.R_1rMuB8jV2OSeE9fomCKLJBfejuxSS4Gsi6MtKxeL8"; // must be anon public key (often starts with eyJ...)
+const SUPABASE_ANON_KEY = "PUT_YOUR_SUPABASE_ANON_KEY_HERE";
 
 const BUCKET_PHOTOS = "applicant-photos";
 const BUCKET_CVS = "applicant-cvs";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    storage: window.sessionStorage,   // <- key change
+    storage: window.sessionStorage,
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: false,
   },
 });
-
 
 // ====== DOM ======
 const loginCard = document.getElementById("loginCard");
@@ -33,6 +33,7 @@ const appsBody = document.getElementById("appsBody");
 
 const refreshBtn = document.getElementById("refreshBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+const resetLoginBtn = document.getElementById("resetLoginBtn");
 
 // Details modal
 const detailsModal = document.getElementById("detailsModal");
@@ -45,18 +46,8 @@ const downloadPhotoBtn = document.getElementById("downloadPhotoBtn");
 const downloadCvBtn = document.getElementById("downloadCvBtn");
 
 let cachedRows = new Map(); // id -> full row
-function closeDetails() {
-  if (!detailsModal) return;
-  detailsModal.classList.add("hidden");
-}
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeDetails();
-});
-
-document.addEventListener("click", (e) => {
-  if (e.target?.getAttribute("data-close") === "details") closeDetails();
-});
+// ====== Helpers ======
 function setStatus(el, msg, type = "") {
   el.textContent = msg;
   el.className = `status ${type}`.trim();
@@ -72,30 +63,96 @@ function escapeHtml(str) {
 }
 
 function fmtBool(v) {
-  if (v === true) return "Yes";
-  if (v === false) return "No";
+  if (v === true || v === "yes") return "Yes";
+  if (v === false || v === "no") return "No";
   return "—";
 }
 
 function fmtValue(v) {
   if (v === null || v === undefined || v === "") return "—";
   if (typeof v === "boolean") return fmtBool(v);
+  if (v === "yes" || v === "no") return fmtBool(v);
   return String(v);
 }
 
-function show(el) { el.classList.remove("hidden"); }
-function hide(el) { el.classList.add("hidden"); }
+function prettyLabel(key) {
+  const labels = {
+    full_name: "Full name",
+    phone_number: "Phone number",
+    position: "Position",
+    position_applied: "Position applied",
+    experience_in_field: "Experience in our field",
+    experience_field_details: "Experience details",
+    can_work_day_night: "Can work day/night",
+    retail_experience: "Retail experience",
+    customer_reaction: "Customer handling answer",
+    nationality: "Nationality",
+    date_of_birth: "Date of birth",
+    residential_city: "Residential city",
+    education_level: "Education level",
+    major: "Major",
+    experience_years: "Experience years",
+    last_company: "Last company",
+    previous_position: "Previous position",
+    previous_salary: "Previous salary",
+    working_hours_preference: "Working hours preference",
+    reason_for_leaving: "Reason for leaving",
+    smoker: "Smoker",
+    has_relatives_in_company: "Has relatives in company",
+    has_driving_license: "Has driving license",
+    can_work_night_shift: "Can work night shift",
+    has_health_issues: "Has health issues",
+    health_issues_details: "Health issues details",
+    message: "Message",
+    consent: "Consent",
+    created_at: "Created at",
+    updated_at: "Updated at"
+  };
 
-function showModal() { show(detailsModal); }
-function closeModal() { hide(detailsModal); }
+  return labels[key] || key.replaceAll("_", " ");
+}
+
+function show(el) {
+  if (el) el.classList.remove("hidden");
+}
+
+function hide(el) {
+  if (el) el.classList.add("hidden");
+}
+
+function showModal() {
+  show(detailsModal);
+}
+
+function closeModal() {
+  hide(detailsModal);
+}
+
+function closeDetails() {
+  closeModal();
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeDetails();
+});
 
 document.addEventListener("click", (e) => {
-  if (e.target?.getAttribute("data-close") === "details") closeModal();
+  if (e.target?.getAttribute("data-close") === "details") closeDetails();
 });
+
+function setFileButtonsNone() {
+  photoPreview.src = "";
+  hide(photoPreview);
+
+  [downloadPhotoBtn, downloadCvBtn].forEach((a) => {
+    a.href = "#";
+    hide(a);
+    a.removeAttribute("download");
+  });
+}
 
 // ====== Auth / admin check ======
 async function isAdmin(userId) {
-  // IMPORTANT: admin_users RLS should allow selecting your own row only
   const { data, error } = await sb
     .from("admin_users")
     .select("user_id")
@@ -127,8 +184,6 @@ async function loadApplications() {
   setStatus(adminStatus, "Loading applications…");
   appsBody.innerHTML = "";
 
-  // Select ALL columns so details view can show everything.
-  // (If you have a lot of rows, this is still fine for HR scale.)
   const { data, error } = await sb
     .from("job_applications")
     .select("*")
@@ -145,11 +200,14 @@ async function loadApplications() {
     tr.setAttribute("data-id", row.id);
 
     const date = row.created_at ? new Date(row.created_at).toLocaleString() : "—";
+    const positionValue = row.position || row.position_applied || "";
+
     tr.innerHTML = `
       <td>${escapeHtml(date)}</td>
       <td>${escapeHtml(row.full_name || "")}</td>
-      <td>${escapeHtml(row.position_applied || "")}</td>
+      <td>${escapeHtml(positionValue)}</td>
     `;
+
     appsBody.appendChild(tr);
   }
 
@@ -181,79 +239,97 @@ async function signedUrl(bucket, path, seconds = 120) {
   return data.signedUrl;
 }
 
-function setFileButtonsNone() {
-  // reset everything so one bad link doesn't break next actions
-  photoPreview.src = "";
-  hide(photoPreview);
-
-  [downloadPhotoBtn,downloadCvBtn].forEach((a) => {
-    a.href = "#";
-    hide(a);
-    a.removeAttribute("download");
-  });
-}
-
 async function openDetails(row) {
-  detailsTitle.textContent = row.full_name || "Application";
-  detailsSub.textContent = row.created_at ? new Date(row.created_at).toLocaleString() : "";
+  const positionValue = row.position || row.position_applied || "—";
 
-  // Show ALL fields automatically (except big/internal ones if you want)
-  // You can exclude columns here:
-const exclude = new Set([
-  "id",
-  "photo_path",
-  "cv_path",
-  "created_at",
-  "updated_at"
-]);
+  detailsTitle.textContent = row.full_name || "Application";
+  detailsSub.textContent = `${row.created_at ? new Date(row.created_at).toLocaleString() : ""}${positionValue !== "—" ? " • " + positionValue : ""}`;
+
+  const exclude = new Set([
+    "id",
+    "photo_path",
+    "cv_path",
+    "created_at",
+    "updated_at"
+  ]);
+
   const entries = Object.entries(row).filter(([k]) => !exclude.has(k));
 
-  // Nice ordering: put key fields first, then the rest
   const priority = [
-    "full_name", "nationality","date_of_birth","residential_city","phone_number","position_applied",
-    "education_level","major","experience_years",
-    "last_company","previous_position","previous_salary","working_hours_preference",
-    "reason_for_leaving","smoker","has_relatives_in_company","has_driving_license","can_work_night_shift",
-    "has_health_issues","health_issues_details","message",
-    "photo_path","cv_path","consent","created_at"
+    "full_name",
+    "phone_number",
+    "position",
+    "position_applied",
+    "experience_in_field",
+    "experience_field_details",
+    "can_work_day_night",
+    "retail_experience",
+    "customer_reaction",
+    "nationality",
+    "date_of_birth",
+    "residential_city",
+    "education_level",
+    "major",
+    "experience_years",
+    "last_company",
+    "previous_position",
+    "previous_salary",
+    "working_hours_preference",
+    "reason_for_leaving",
+    "smoker",
+    "has_relatives_in_company",
+    "has_driving_license",
+    "can_work_night_shift",
+    "has_health_issues",
+    "health_issues_details",
+    "message",
+    "consent"
   ];
 
   const byKey = new Map(entries);
   const ordered = [];
-  for (const k of priority) if (byKey.has(k)) ordered.push([k, byKey.get(k)]);
-  for (const [k, v] of entries) if (!priority.includes(k)) ordered.push([k, v]);
+
+  for (const k of priority) {
+    if (byKey.has(k)) {
+      ordered.push([k, byKey.get(k)]);
+    }
+  }
+
+  for (const [k, v] of entries) {
+    if (!priority.includes(k)) {
+      ordered.push([k, v]);
+    }
+  }
 
   detailsBody.innerHTML = ordered
-    .map(([k, v]) => `<div class="kv"><strong>${escapeHtml(k)}</strong><div>${escapeHtml(fmtValue(v))}</div></div>`)
+    .map(([k, v]) => {
+      return `
+        <div class="kv">
+          <strong>${escapeHtml(prettyLabel(k))}</strong>
+          <div>${escapeHtml(fmtValue(v))}</div>
+        </div>
+      `;
+    })
     .join("");
 
-  // Files
   setFileButtonsNone();
 
-  // Photo
   if (row.photo_path) {
-    const url = await signedUrl(BUCKET_PHOTOS, row.photo_path, 180);
+    const photoUrl = await signedUrl(BUCKET_PHOTOS, row.photo_path, 180);
 
-    photoPreview.src = url;
+    photoPreview.src = photoUrl;
     show(photoPreview);
 
-   
-    downloadPhotoBtn.href = url;
+    downloadPhotoBtn.href = photoUrl;
     downloadPhotoBtn.setAttribute("download", "photo");
-
-  
     show(downloadPhotoBtn);
   }
 
-  // CV
   if (row.cv_path) {
-    const url = await signedUrl(BUCKET_CVS, row.cv_path, 180);
+    const cvUrl = await signedUrl(BUCKET_CVS, row.cv_path, 180);
 
- 
-    downloadCvBtn.href = url;
+    downloadCvBtn.href = cvUrl;
     downloadCvBtn.setAttribute("download", "cv");
-
-
     show(downloadCvBtn);
   }
 
@@ -277,13 +353,6 @@ sb.auth.onAuthStateChange(async (_event, session) => {
 });
 
 // ====== Login ======
-function withTimeout(promise, ms = 10000) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error("Login timed out.")), ms)),
-  ]);
-}
-
 let slowTimer = null;
 
 loginForm.addEventListener("submit", async (e) => {
@@ -315,14 +384,11 @@ loginForm.addEventListener("submit", async (e) => {
   }
 });
 
-const resetLoginBtn = document.getElementById("resetLoginBtn");
-
 resetLoginBtn.addEventListener("click", async () => {
   try { await sb.auth.signOut(); } catch {}
-  try { sessionStorage.clear(); localStorage.clear(); } catch {}
+  try { sessionStorage.clear(); } catch {}
   location.reload();
 });
-
 
 // ====== Buttons ======
 refreshBtn.addEventListener("click", async () => {
