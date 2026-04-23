@@ -5,7 +5,6 @@ const SUPABASE_URL = "https://hofhjeevhbinaszewohl.supabase.co";
 const SUPABASE_ANON_KEY = "PUT_YOUR_SUPABASE_ANON_KEY_HERE";
 
 const BUCKET_PHOTOS = "applicant-photos";
-const BUCKET_CVS = "applicant-cvs";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -45,7 +44,7 @@ const photoPreview = document.getElementById("photoPreview");
 const downloadPhotoBtn = document.getElementById("downloadPhotoBtn");
 const downloadCvBtn = document.getElementById("downloadCvBtn");
 
-let cachedRows = new Map(); // id -> full row
+let cachedRows = new Map();
 
 // ====== Helpers ======
 function setStatus(el, msg, type = "") {
@@ -80,33 +79,12 @@ function prettyLabel(key) {
     full_name: "Full name",
     phone_number: "Phone number",
     position: "Position",
-    position_applied: "Position applied",
     experience_in_field: "Experience in our field",
     experience_field_details: "Experience details",
-    can_work_day_night: "Can work day/night",
+    can_work_day_night: "Can work day and night",
     retail_experience: "Retail experience",
     customer_reaction: "Customer handling answer",
-    nationality: "Nationality",
-    date_of_birth: "Date of birth",
-    residential_city: "Residential city",
-    education_level: "Education level",
-    major: "Major",
-    experience_years: "Experience years",
-    last_company: "Last company",
-    previous_position: "Previous position",
-    previous_salary: "Previous salary",
-    working_hours_preference: "Working hours preference",
-    reason_for_leaving: "Reason for leaving",
-    smoker: "Smoker",
-    has_relatives_in_company: "Has relatives in company",
-    has_driving_license: "Has driving license",
-    can_work_night_shift: "Can work night shift",
-    has_health_issues: "Has health issues",
-    health_issues_details: "Health issues details",
-    message: "Message",
     consent: "Consent",
-    created_at: "Created at",
-    updated_at: "Updated at"
   };
 
   return labels[key] || key.replaceAll("_", " ");
@@ -128,16 +106,12 @@ function closeModal() {
   hide(detailsModal);
 }
 
-function closeDetails() {
-  closeModal();
-}
-
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeDetails();
+  if (e.key === "Escape") closeModal();
 });
 
 document.addEventListener("click", (e) => {
-  if (e.target?.getAttribute("data-close") === "details") closeDetails();
+  if (e.target?.getAttribute("data-close") === "details") closeModal();
 });
 
 function setFileButtonsNone() {
@@ -151,7 +125,7 @@ function setFileButtonsNone() {
   });
 }
 
-// ====== Auth / admin check ======
+// ====== Admin check ======
 async function isAdmin(userId) {
   const { data, error } = await sb
     .from("admin_users")
@@ -179,14 +153,27 @@ async function showAdminUI(session) {
   await loadApplications();
 }
 
-// ====== Data ======
+// ====== Load applications ======
 async function loadApplications() {
   setStatus(adminStatus, "Loading applications…");
   appsBody.innerHTML = "";
 
   const { data, error } = await sb
     .from("job_applications")
-    .select("*")
+    .select(`
+      id,
+      created_at,
+      full_name,
+      phone_number,
+      position,
+      experience_in_field,
+      experience_field_details,
+      can_work_day_night,
+      retail_experience,
+      customer_reaction,
+      photo_path,
+      consent
+    `)
     .order("created_at", { ascending: false })
     .limit(300);
 
@@ -200,12 +187,11 @@ async function loadApplications() {
     tr.setAttribute("data-id", row.id);
 
     const date = row.created_at ? new Date(row.created_at).toLocaleString() : "—";
-    const positionValue = row.position || row.position_applied || "";
 
     tr.innerHTML = `
       <td>${escapeHtml(date)}</td>
       <td>${escapeHtml(row.full_name || "")}</td>
-      <td>${escapeHtml(positionValue)}</td>
+      <td>${escapeHtml(row.position || "")}</td>
     `;
 
     appsBody.appendChild(tr);
@@ -214,7 +200,7 @@ async function loadApplications() {
   setStatus(adminStatus, "Loaded.", "ok");
 }
 
-// Click a row -> open details
+// ====== Row click ======
 appsBody.addEventListener("click", async (e) => {
   const tr = e.target.closest("tr[data-id]");
   if (!tr) return;
@@ -232,7 +218,7 @@ appsBody.addEventListener("click", async (e) => {
   }
 });
 
-// ====== Files via signed URLs ======
+// ====== Files ======
 async function signedUrl(bucket, path, seconds = 120) {
   const { data, error } = await sb.storage.from(bucket).createSignedUrl(path, seconds);
   if (error) throw new Error(error.message);
@@ -240,79 +226,33 @@ async function signedUrl(bucket, path, seconds = 120) {
 }
 
 async function openDetails(row) {
-  const positionValue = row.position || row.position_applied || "—";
-
   detailsTitle.textContent = row.full_name || "Application";
-  detailsSub.textContent = `${row.created_at ? new Date(row.created_at).toLocaleString() : ""}${positionValue !== "—" ? " • " + positionValue : ""}`;
+  detailsSub.textContent =
+    `${row.created_at ? new Date(row.created_at).toLocaleString() : ""}${row.position ? " • " + row.position : ""}`;
 
-  const exclude = new Set([
-    "id",
-    "photo_path",
-    "cv_path",
-    "created_at",
-    "updated_at"
-  ]);
-
-  const entries = Object.entries(row).filter(([k]) => !exclude.has(k));
-
-  const priority = [
-    "full_name",
-    "phone_number",
-    "position",
-    "position_applied",
-    "experience_in_field",
-    "experience_field_details",
-    "can_work_day_night",
-    "retail_experience",
-    "customer_reaction",
-    "nationality",
-    "date_of_birth",
-    "residential_city",
-    "education_level",
-    "major",
-    "experience_years",
-    "last_company",
-    "previous_position",
-    "previous_salary",
-    "working_hours_preference",
-    "reason_for_leaving",
-    "smoker",
-    "has_relatives_in_company",
-    "has_driving_license",
-    "can_work_night_shift",
-    "has_health_issues",
-    "health_issues_details",
-    "message",
-    "consent"
+  const ordered = [
+    ["full_name", row.full_name],
+    ["phone_number", row.phone_number],
+    ["position", row.position],
+    ["experience_in_field", row.experience_in_field],
+    ["experience_field_details", row.experience_field_details],
+    ["can_work_day_night", row.can_work_day_night],
+    ["retail_experience", row.retail_experience],
+    ["customer_reaction", row.customer_reaction],
+    ["consent", row.consent],
   ];
 
-  const byKey = new Map(entries);
-  const ordered = [];
-
-  for (const k of priority) {
-    if (byKey.has(k)) {
-      ordered.push([k, byKey.get(k)]);
-    }
-  }
-
-  for (const [k, v] of entries) {
-    if (!priority.includes(k)) {
-      ordered.push([k, v]);
-    }
-  }
-
   detailsBody.innerHTML = ordered
-    .map(([k, v]) => {
-      return `
-        <div class="kv">
-          <strong>${escapeHtml(prettyLabel(k))}</strong>
-          <div>${escapeHtml(fmtValue(v))}</div>
-        </div>
-      `;
-    })
+    .map(([k, v]) => `
+      <div class="kv">
+        <strong>${escapeHtml(prettyLabel(k))}</strong>
+        <div>${escapeHtml(fmtValue(v))}</div>
+      </div>
+    `)
     .join("");
 
   setFileButtonsNone();
+  hide(downloadCvBtn); // ما عاد في CV بكودك الحالي
 
   if (row.photo_path) {
     const photoUrl = await signedUrl(BUCKET_PHOTOS, row.photo_path, 180);
@@ -323,14 +263,6 @@ async function openDetails(row) {
     downloadPhotoBtn.href = photoUrl;
     downloadPhotoBtn.setAttribute("download", "photo");
     show(downloadPhotoBtn);
-  }
-
-  if (row.cv_path) {
-    const cvUrl = await signedUrl(BUCKET_CVS, row.cv_path, 180);
-
-    downloadCvBtn.href = cvUrl;
-    downloadCvBtn.setAttribute("download", "cv");
-    show(downloadCvBtn);
   }
 
   showModal();
