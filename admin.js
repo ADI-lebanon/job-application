@@ -2,7 +2,7 @@ console.log("ADMIN JS LOADED", new Date().toISOString());
 
 // ====== CONFIG ======
 const SUPABASE_URL = "https://hofhjeevhbinaszewohl.supabase.co";
-const SUPABASE_ANON_KEY = "PUT_YOUR_SUPABASE_ANON_KEY_HERE";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvZmhqZWV2aGJpbmFzemV3b2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NDg1NjIsImV4cCI6MjA4NTMyNDU2Mn0.R_1rMuB8jV2OSeE9fomCKLJBfejuxSS4Gsi6MtKxeL8";
 
 const BUCKET_PHOTOS = "applicant-photos";
 
